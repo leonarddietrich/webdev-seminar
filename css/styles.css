@@ -1,0 +1,37 @@
+
+html {
+	background: linear-gradient( rgba(22, 22, 24, 0.1), rgba(22,22,24,1.0)),url('../imgs/japan_street_night.jpg');
+/*	background-image: url('../imgs/japan_street_night.jpg');*/
+	background-color: #161618;
+	color: #f2f5f4;
+	font-family: Sans-Serif;
+	text-shadow: 2px 2px 0px #161618;
+	background-size: 100%;
+}
+
+
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+img {
+	border-radius:  2%;
+	max-width: 45%;
+}
+.text {
+	padding-left: 40px;
+	font-size: 1.2em;
+	line-height: 2rem;
+}
+ol > li::marker {
+	font-weight: bold;
+	margin: 2rem;
+}
+a {
+	color: #75c0c7;
+}
+
+.impressum {
+	background-image: url('../img/vantanoblack.jpg');
+}
