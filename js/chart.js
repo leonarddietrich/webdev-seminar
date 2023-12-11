@@ -1,10 +1,13 @@
 console.log('chart.js loaded');
+
+const exercices = {}
+
 var trainingsData = {
   dates: ['2020-01-01', '2020-01-02', '2020-01-03'],
   reps: [1, 45, 30],
   weight: [50, 3, 18]
 }
-
+var chart;
 var testitest = true;
 var stuff = `
 <ul>
@@ -18,6 +21,15 @@ var stiff = `
 <h1>Test</h1>
 `;
 
+// set default values for date, weight and repetitions
+window.onload = function() {
+  console.log('window.onload() called');
+  const today = new Date();
+  const formattedDate = today.toISOString().substring(0, 10);
+  document.getElementById('date').value = formattedDate;
+  document.getElementById('weight').value = 1;
+  document.getElementById('repetition').value = 1;
+}
 
 function test(){
   const htmlStuff = document.getElementById('test');
@@ -29,21 +41,33 @@ function test(){
   testitest = !testitest;
 }
 
-function addData(inputData) {
+function addData(event) {
+  event.preventDefault();
   console.log('addData() called');
-  console.log(inputData);
 
-  var date = new Date();
-  console.log(date);
-  // console.log(inputData.date);
-  // trainingsData.date.push(inputData.getElementById('date').value);
-  // trainingsData.reps.push(inputData.reps);
-  // trainingsData.weight.push(inputData.weight);
-  dispayData();
+  // Make sure the elements exist before trying to access their values
+  var dateElement = document.getElementById('date');
+  var weightElement = document.getElementById('weight');
+  var repsElement = document.getElementById('repetition');
+
+  if (dateElement && weightElement && repsElement) {
+    var date = dateElement.value;
+    var weight = weightElement.value;
+    var reps = repsElement.value;
+
+    console.log(date, reps, weight);
+
+    trainingsData.dates.push(date);
+    trainingsData.weight.push(weight);
+    trainingsData.reps.push(reps);
+
+    displayData();
+  } else {
+    console.log('One or more elements could not be found');
+  }
 }
 
-function displayData(){
-  console.log('dispayData() called');
+function displayData() {
   displayChart(trainingsData);
 }
 
@@ -53,7 +77,11 @@ function displayChart(dispayData) {
   console.log(dispayData);
   const ctx = document.getElementById('myChart');
 
-  new Chart(ctx, {
+  if (chart) {
+    chart.destroy();
+  }
+
+  chart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: dispayData.dates,
