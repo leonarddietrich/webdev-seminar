@@ -1,35 +1,106 @@
 <!DOCTYPE html>
 <html lang="de">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Pasta alla Norma</title>
-		<link rel="icon" href="imgs/icons/noodle-house.svg" type="image/svg+xml">
-		<link rel="stylesheet" type="text/css" href="css/styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Fitness Tracker</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pasta alla Norma</title>
+    <link rel="icon" href="imgs/icons/noodle-house.svg" type="image/svg+xml" />
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/chart.js"></script>
-	</head>
-	<body>
+  </head>
+
+  <body>
     <div id="test">Test</div>
     <button onclick="test()">Test</button>
+    <div class="auswahl">
+      <li>
+        <strong
+          ><button onclick="loadTracker()">Fitness Tracker</button></strong
+        >
+      </li>
+      <li>
+        <strong
+          ><button onclick="loadNewSession()">
+            Neues Training hinzufügen
+          </button></strong
+        >
+      </li>
+      <li>
+        <strong
+          ><button onclick="loadNewExercise()">
+            Übungen bearbeiten
+          </button></strong
+        >
+      </li>
+      <li class="last-item">
+        <strong
+          ><button onclick="loadProgresstracking()">
+            Progress Tracking
+          </button></strong
+        >
+      </li>
+    </div>
+    <div id="content" style="display: none">Test</div>
+    <div id="loadNewExercise" style="display: none">
+      <form>
+        <div class="container">
+          <label for="storage"> Neue Übung </label>
+          <input id="storage" class="storage" type="text" name="storage" />
+          <p class="text">Text</p>
+          <button class="button">Hinzufügen</button>
+          <button onclick="downloadLocalStorageData()">Download Data</button>
+          <meta charset="UTF-8" />
+        </div>
+      </form>
+    </div>
 
     <!-- data input form -->
     <form id="dataInput">
       <label for="date">Date</label>
-      <input type="date" id="date" name="date" value="2021-01-01" min="2021-01-01" max="2021-12-31">
+      <input
+        type="date"
+        id="date"
+        name="date"
+        value="2021-01-01"
+        min="2021-01-01"
+        max="2021-12-31"
+      />
       <label for="weight">Weight</label>
-      <input type="number" id="weight" name="weight" min="0" max="10000" step="1">
+      <input
+        type="number"
+        id="weight"
+        name="weight"
+        min="0"
+        max="10000"
+        step="1"
+      />
       <label for="repetition">Repetions</label>
-      <input type="number" id="repetition" name="repetition" min="0" max="100" step="1">
+      <input
+        type="number"
+        id="repetition"
+        name="repetition"
+        min="0"
+        max="100"
+        step="1"
+      />
       <button onclick="addData(event)">Add Data</button>
     </form>
-    
+
     <button onclick="displayData()">Display Data</button>
 
     <div>
       <canvas id="myChart"></canvas>
     </div>
 
-    <a href="sites/impressum.html">Impressum</a>
-    </body>
+    <div id="loadNewSession" style="display: none">Neues Training</div>
+    <div id="loadProgresstracking" style="display: none">
+      <display onload="get()">Zeitlinie</display>
+    </div>
+    <script src="js/chart.js"></script>
+    <script src="js/pagecontent.js"></script>
+  </body>
 </html>
