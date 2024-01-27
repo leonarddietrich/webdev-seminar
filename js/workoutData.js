@@ -125,12 +125,14 @@ function trainingDataContainsType(trainingData, workoutType) {
 }
 
 // get all workout types from training data
-function getWorkoutTypes() {
+function getWorkoutTypes(tag) {
   console.log("getWorkoutTypes() called");
   var trainingData = getTrainingData();
   var workoutTypes = [];
   trainingData.forEach((element) => {
-    workoutTypes.push(element.type);
+    if (tag) {
+      if (element.tags.includes(tag)) workoutTypes.push(element.type);
+    } else workoutTypes.push(element.type);
   });
   return workoutTypes;
 }
@@ -192,14 +194,17 @@ function displayWorkoutTags() {
     if (element.tags.length > 0) workoutTags.push(element.tags);
   });
   console.log("workoutTags: " + workoutTags);
-  workoutTagsDisplayElement.innerHTML = "";
+  var content = "";
+
   workoutTags.forEach((element) => {
-    workoutTagsDisplayElement.innerHTML += `<button>${element}</button>`;
+    content += `<button onclick="displayWorkoutTypes('${element}')">${element}</button>`;
   });
+  content += `<button onclick="displayWorkoutTypes()">RESET</button>`;
+  workoutTagsDisplayElement.innerHTML = content;
 }
 
 // list workoutTypes
-function displayWorkoutTypes() {
+function displayWorkoutTypes(tag) {
   console.log("listTypes() called");
 
   var workoutTypeElement = document.getElementById("workoutTypeDisplay");
@@ -207,12 +212,12 @@ function displayWorkoutTypes() {
     console.log("element 'workoutTypeList' could not be found");
     return;
   }
-
-  var workoutTypes = getWorkoutTypes();
-  workoutTypeElement.innerHTML = "";
+  var workoutTypes = getWorkoutTypes(tag);
+  var content = "";
   workoutTypes.forEach((element) => {
-    workoutTypeElement.innerHTML += `<button>${element}</button>`;
+    content += `<button>${element}</button>`;
   });
+  workoutTypeElement.innerHTML = content;
 }
 
 // list trainingData
