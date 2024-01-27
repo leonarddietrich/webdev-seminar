@@ -22,6 +22,10 @@ function setTrainingData(trainingData) {
 // inistialize trainingData
 function initTrainingData() {
   console.log("initTrainingData() called");
+  // do nothin if trainingData already exists
+  if (getTrainingData().length > 0) {
+    return;
+  }
   var trainingData = [
     {
       type: "benchpress",
@@ -53,22 +57,22 @@ function addTrainingType(event) {
   console.log("addTrainingType() called");
 
   // Make sure the elements exist before trying to access their values
-  var trainingTypeElement = document.getElementById("trainingType");
+  var workoutTypeElement = document.getElementById("workoutType");
 
-  if (!trainingTypeElement) {
-    console.log("element 'trainingType' could not be found");
+  if (!workoutTypeElement) {
+    console.log("element 'workoutType' could not be found");
     return;
   }
-  var trainingType = trainingTypeElement.value;
+  var workoutType = workoutTypeElement.value;
   var trainingData = getTrainingData();
 
-  if (trainingDataContainsType(trainingData, trainingType)) {
+  if (trainingDataContainsType(trainingData, workoutType)) {
     console.log("trainingData for 'traingingType' already exists");
     return;
   }
 
   trainingData.push({
-    type: trainingType,
+    type: workoutType,
     tags: [],
     sets: [],
   });
@@ -82,30 +86,30 @@ function addData(event) {
   console.log("addData() called");
 
   // Make sure the elements exist before trying to access their values
-  var trainingTypeElement = document.getElementById("trainingType");
+  var workoutTypeElement = document.getElementById("workoutType");
   var weightElement = document.getElementById("weight");
   var repetitionsElement = document.getElementById("repetition");
 
-  if (!trainingTypeElement || !weightElement || !repetitionsElement) {
+  if (!workoutTypeElement || !weightElement || !repetitionsElement) {
     console.log("One or more elements could not be found");
     return;
   }
-  var trainingType = trainingTypeElement.value;
+  var workoutType = workoutTypeElement.value;
   var timecode = new Date().getTime();
-  var weight = weightElement.value;
-  var repetitions = repetitionsElement.value;
+  var weight = parseFloat(weightElement.value);
+  var repetitions = parseInt(repetitionsElement.value);
 
-  console.log(trainingType, new Date(timecode), repetitions, weight);
+  console.log(workoutType, new Date(timecode), repetitions, weight);
 
   var trainingData = getTrainingData();
 
-  if (!trainingDataContainsType(trainingData, trainingType)) {
+  if (!trainingDataContainsType(trainingData, workoutType)) {
     console.log("trainingData for 'traingingType' not found");
     return;
   }
 
   trainingData
-    .find((element) => element.type === trainingType)
+    .find((element) => element.type === workoutType)
     .sets.push({
       timecode: timecode,
       repetitions: repetitions,
@@ -115,69 +119,107 @@ function addData(event) {
   setTrainingData(trainingData);
 }
 
-function trainingDataContainsType(trainingData, trainingType) {
+function trainingDataContainsType(trainingData, workoutType) {
   console.log("trainingDataContainsType() called");
-  return trainingData.find((element) => element.type === trainingType);
+  return trainingData.find((element) => element.type === workoutType);
 }
 
-// get all trainingTypes from trainingData
-function getTrainingTypes() {
-  console.log("getTrainingTypes() called");
+// get all workout types from training data
+function getWorkoutTypes() {
+  console.log("getWorkoutTypes() called");
   var trainingData = getTrainingData();
-  var trainingTypes = [];
+  var workoutTypes = [];
   trainingData.forEach((element) => {
-    trainingTypes.push(element.type);
+    workoutTypes.push(element.type);
   });
-  return trainingTypes;
+  return workoutTypes;
 }
 
-// rename trainingType in trainingData
+// rename workoutType in trainingData
 function renameTrainingType(event) {
   event.preventDefault();
   console.log("renameTrainingType() called");
 
   // Make sure the elements exist before trying to access their values
-  var trainingTypeElement = document.getElementById("trainingType");
-  var newTrainingTypeElement = document.getElementById("newTrainingType");
+  var workoutTypeElement = document.getElementById("workoutType");
+  var newworkoutTypeElement = document.getElementById("newTrainingType");
 
-  if (!trainingTypeElement || !newTrainingTypeElement) {
+  if (!workoutTypeElement || !newworkoutTypeElement) {
     console.log("One or more elements could not be found");
     return;
   }
-  var trainingType = trainingTypeElement.value;
-  var newTrainingType = newTrainingTypeElement.value;
+  var workoutType = workoutTypeElement.value;
+  var newTrainingType = newworkoutTypeElement.value;
 
   var trainingData = getTrainingData();
-  trainingData.find((element) => element.type === trainingType).type =
+  trainingData.find((element) => element.type === workoutType).type =
     newTrainingType;
   setTrainingData(trainingData);
 }
 
-// revmove trainingType from trainingData
+// revmove workoutType from trainingData
 function removeTrainingType(event) {
   event.preventDefault();
   console.log("removeTrainingType() called");
 
   // Make sure the elements exist before trying to access their values
-  var trainingTypeElement = document.getElementById("trainingType");
+  var workoutTypeElement = document.getElementById("workoutType");
 
-  if (!trainingTypeElement) {
-    console.log("element 'trainingType' could not be found");
+  if (!workoutTypeElement) {
+    console.log("element 'workoutType' could not be found");
     return;
   }
-  var trainingType = trainingTypeElement.value;
+  var workoutType = workoutTypeElement.value;
 
   var trainingData = getTrainingData();
-  trainingData = trainingData.filter(
-    (element) => element.type !== trainingType
-  );
+  trainingData = trainingData.filter((element) => element.type !== workoutType);
   setTrainingData(trainingData);
 }
 
+function displayWorkoutTags() {
+  console.log("displayTags() called");
+
+  var workoutTagsDisplayElement = document.getElementById("workoutTagsDisplay");
+  if (!workoutTagsDisplayElement) {
+    console.log("element 'workoutTagsDisplay' could not be found");
+    return;
+  }
+
+  var trainingData = getTrainingData();
+  var workoutTags = [];
+  trainingData.forEach((element) => {
+    console.log(element.type + " => " + element.tags);
+    if (element.tags.length > 0) workoutTags.push(element.tags);
+  });
+  console.log("workoutTags: " + workoutTags);
+  workoutTagsDisplayElement.innerHTML = "";
+  workoutTags.forEach((element) => {
+    workoutTagsDisplayElement.innerHTML += `<button>${element}</button>`;
+  });
+}
+
+// list workoutTypes
+function displayWorkoutTypes() {
+  console.log("listTypes() called");
+
+  var workoutTypeElement = document.getElementById("workoutTypeDisplay");
+  if (!workoutTypeElement) {
+    console.log("element 'workoutTypeList' could not be found");
+    return;
+  }
+
+  var workoutTypes = getWorkoutTypes();
+  workoutTypeElement.innerHTML = "";
+  workoutTypes.forEach((element) => {
+    workoutTypeElement.innerHTML += `<button>${element}</button>`;
+  });
+}
+
 // list trainingData
-function listData(traingingType) {
+function displayDataForTrainingType(traingingType) {
   console.log("listData() called");
-  console.log("trainingType: " + traingingType);
+  console.log("workoutType: " + traingingType);
+
   var trainingData = getTrainingData().find(
     (element) => element.type === traingingType
   );
