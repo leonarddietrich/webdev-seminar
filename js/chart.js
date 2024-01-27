@@ -1,104 +1,95 @@
-console.log('chart.js loaded');
+console.log("chart.js loaded");
 
-const exercices = {}
-
-var trainingsData = {
-  dates: ['2020-01-01', '2020-01-02', '2020-01-03'],
-  reps: [1, 45, 30],
-  weight: [50, 3, 18]
-}
 var chart;
-var testitest = true;
-var stuff = `
-<ul>
-  <li>1</li>
-  <li>2</li>
-  <li>3</li>
-</ul>
-`;
 
-var stiff = `
-<h1>Test</h1>
-`;
-
-// set default values for date, weight and repetitions
-window.onload = function() {
-  console.log('window.onload() called');
-  const today = new Date();
-  const formattedDate = today.toISOString().substring(0, 10);
-  document.getElementById('date').value = formattedDate;
-  document.getElementById('weight').value = 1;
-  document.getElementById('repetition').value = 1;
-}
-
-function test(){
-  const htmlStuff = document.getElementById('test');
-  if(testitest){
-    htmlStuff.innerHTML = stiff;
-  } else {
-    htmlStuff.innerHTML = stuff;
+// load trainingData from sessionStorage
+function getTrainingData() {
+  console.log("getTrainingData() called");
+  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  if (!trainingData) {
+    trainingData = [];
+    sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
   }
-  testitest = !testitest;
+  return trainingData;
 }
 
-function addData(event) {
-  event.preventDefault();
-  console.log('addData() called');
+// refresh chart event
+function displayData(event) {
+  // event.preventDefault();
+  console.log("displayData() called");
 
   // Make sure the elements exist before trying to access their values
-  var dateElement = document.getElementById('date');
-  var weightElement = document.getElementById('weight');
-  var repsElement = document.getElementById('repetition');
-
-  if (dateElement && weightElement && repsElement) {
-    var date = dateElement.value;
-    var weight = weightElement.value;
-    var reps = repsElement.value;
-
-    console.log(date, reps, weight);
-
-    trainingsData.dates.push(date);
-    trainingsData.weight.push(weight);
-    trainingsData.reps.push(reps);
-
-    displayData();
-  } else {
-    console.log('One or more elements could not be found');
+  var trainingTypeElement = document.getElementById("trainingType");
+  if (!trainingTypeElement) {
+    console.log("element 'trainingType' could not be found");
+    return;
   }
+  var trainingType = trainingTypeElement.value;
+
+  var trainingsData = getData(trainingType);
+  displayChart(trainingsData);
 }
 
-function displayData() {
-  displayChart(trainingsData);
+// get data from sessionStorage
+function getData(trainingType) {
+  console.log("getData() called");
+  console.log("trainingType: " + trainingType);
+  var trainingData = getTrainingData();
+  console.log(trainingData);
+  var trainingsData = {
+    dates: [],
+    reps: [],
+    weight: [],
+  };
+
+  trainingData
+    .find((element) => element.type === trainingType)
+    .sets.forEach((element) => {
+      var date = new Date(element.timecode);
+      trainingsData.dates.push(
+        date.toISOString().substring(0, 10) +
+          " " +
+          date.toISOString().substring(11, 16) +
+          " Uhr"
+      );
+      trainingsData.reps.push(element.repetitions);
+      trainingsData.weight.push(element.weight);
+    });
+
+  console.log(trainingsData);
+  return trainingsData;
 }
 
 // dispay chart with given data
 function displayChart(dispayData) {
-  console.log('displayChart() called');
+  console.log("displayChart() called");
   console.log(dispayData);
-  const ctx = document.getElementById('myChart');
+  const ctx = document.getElementById("myChart");
 
   if (chart) {
     chart.destroy();
   }
 
   chart = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: {
       labels: dispayData.dates,
-      datasets: [{
-        label: 'repetitions x weight',
-        data: multiplyArray(dispayData.reps,dispayData.weight),
-        borderWidth: 5
-      }]
+      datasets: [
+        {
+          label: "repetitions x weight",
+          data: multiplyArray(dispayData.reps, dispayData.weight),
+          borderWidth: 5,
+        },
+      ],
     },
     options: {
       tension: 0.4,
-    }
+    },
   });
 }
 
 function multiplyArray(array1, array2) {
-  console.log('multiplyArray() called');
+  console.log("multiplyArray() called");
   console.log(array1);
   console.log(array2);
   var result = [];
