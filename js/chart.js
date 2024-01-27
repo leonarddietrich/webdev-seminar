@@ -1,12 +1,17 @@
 console.log("chart.js loaded");
 
-// var trainingsData = {
-//   dates: ["2020-01-01", "2020-01-02", "2020-01-04"],
-//   reps: [1, 45, 30],
-//   weight: [50, 3, 18],
-// };
-
 var chart;
+
+// load trainingData from sessionStorage
+function getTrainingData() {
+  console.log("getTrainingData() called");
+  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  if (!trainingData) {
+    trainingData = [];
+    sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
+  }
+  return trainingData;
+}
 
 // refresh chart event
 function displayData(event) {
@@ -29,7 +34,7 @@ function displayData(event) {
 function getData(trainingType) {
   console.log("getData() called");
   console.log("trainingType: " + trainingType);
-  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  var trainingData = getTrainingData();
   console.log(trainingData);
   var trainingsData = {
     dates: [],
