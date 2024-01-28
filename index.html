@@ -18,11 +18,18 @@
     <h1>GAIN</h1>
     <h3>show workouts by tags</h3>
     <div id="workoutTagsDisplay">tags not loaded</div>
+
     <h2>Workouts</h2>
+    <form>
+      <label for="workoutType">Training Type</label>
+      <input id="workoutType" name="workoutType" />
+      <button onclick="addWorkoutType(event); displayWorkoutTypes();">
+        Add Training Type
+      </button>
+    </form>
     <div id="workoutTypeDisplay">workout types not loaded</div>
 
     <br />
-    <a href="sites/workout.html">workout test</a>
     <a href="sites/impressum.html">Impressum</a>
 
     <!-- load traingin types into trainingTypeList -->
