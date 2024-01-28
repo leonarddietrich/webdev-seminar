@@ -5,10 +5,9 @@ var chart;
 // load trainingData from sessionStorage
 function getTrainingData() {
   console.log("getTrainingData() called");
-  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  var trainingData = JSON.parse(localStorage.getItem("trainingData"));
   if (!trainingData) {
     trainingData = [];
-    sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
   }
   return trainingData;
 }

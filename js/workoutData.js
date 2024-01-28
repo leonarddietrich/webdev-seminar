@@ -1,14 +1,26 @@
 console.log("trainingData.js loaded");
 
-onload = initTrainingData();
+// function getLocalTrainingData() {
+//   console.log("getLocalTrainingData() called");
+//   var trainingData = JSON.parse(localStorage.getItem("trainingData"));
+//   if (!trainingData) {
+//     trainingData = [];
+//   }
+//   return trainingData;
+// }
+
+// function setLocalTrainingData(trainingData) {
+//   console.log("setLocalTrainingData() called");
+//   localStorage.setItem("trainingData", JSON.stringify(trainingData));
+// }
 
 // load trainingData from sessionStorage
 function getTrainingData() {
   console.log("getTrainingData() called");
-  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  var trainingData = JSON.parse(localStorage.getItem("trainingData"));
   if (!trainingData) {
     trainingData = [];
-    sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
+    localStorage.setItem("trainingData", JSON.stringify(trainingData));
   }
   return trainingData;
 }
@@ -16,7 +28,7 @@ function getTrainingData() {
 // save trainingData to sessionStorage
 function setTrainingData(trainingData) {
   console.log("setTrainingData() called");
-  sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
+  localStorage.setItem("trainingData", JSON.stringify(trainingData));
 }
 
 function setActiveWorkout(workoutType) {
@@ -36,37 +48,37 @@ function getActiveWorkout() {
 }
 
 // inistialize trainingData
-function initTrainingData() {
-  console.log("initTrainingData() called");
-  // do nothin if trainingData already exists
-  if (getTrainingData().length > 0) {
-    return;
-  }
-  var trainingData = [
-    {
-      type: "benchpress",
-      tags: ["push"],
-      sets: [
-        {
-          timecode: new Date(2024, 1, 1, 20, 10, 3).getTime(),
-          repetitions: 1,
-          weight: 50,
-        },
-        {
-          timecode: new Date(2024, 1, 1, 20, 13, 12).getTime(),
-          repetitions: 45,
-          weight: 3,
-        },
-        {
-          timecode: new Date(2024, 1, 1, 20, 18, 1).getTime(),
-          repetitions: 30,
-          weight: 18,
-        },
-      ],
-    },
-  ];
-  setTrainingData(trainingData);
-}
+// function initTrainingData() {
+//   console.log("initTrainingData() called");
+//   // do nothin if trainingData already exists
+//   if (getTrainingData().length > 0) {
+//     return;
+//   }
+//   var trainingData = [
+//     {
+//       type: "benchpress",
+//       tags: ["push"],
+//       sets: [
+//         {
+//           timecode: new Date(2024, 1, 1, 20, 10, 3).getTime(),
+//           repetitions: 1,
+//           weight: 50,
+//         },
+//         {
+//           timecode: new Date(2024, 1, 1, 20, 13, 12).getTime(),
+//           repetitions: 45,
+//           weight: 3,
+//         },
+//         {
+//           timecode: new Date(2024, 1, 1, 20, 18, 1).getTime(),
+//           repetitions: 30,
+//           weight: 18,
+//         },
+//       ],
+//     },
+//   ];
+//   setTrainingData(trainingData);
+// }
 
 function addWorkoutType(event) {
   event.preventDefault();
@@ -234,7 +246,7 @@ function displayWorkoutTags() {
 
 // list workoutTypes
 function displayWorkoutTypes(tag) {
-  console.log("listTypes() called");
+  console.log("displayWorkoutTypes() called");
 
   var workoutTypeElement = document.getElementById("workoutTypeDisplay");
   if (!workoutTypeElement) {
@@ -282,6 +294,7 @@ function displayDataForWorkoutType() {
 }
 
 function downloadData() {
+  console.log("downloadData() called");
   var dataStr =
     "data:text/json;charset=utf-8," +
     encodeURIComponent(JSON.stringify(getTrainingData()));
