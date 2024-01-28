@@ -175,43 +175,35 @@ function getWorkoutTypes(tag) {
 }
 
 // rename workoutType in trainingData
-function renameTrainingType(event) {
-  event.preventDefault();
-  console.log("renameTrainingType() called");
+function renameWorkout(event) {
+  console.log("renameWorkout() called");
 
-  // Make sure the elements exist before trying to access their values
-  var workoutTypeElement = document.getElementById("workoutType");
-  var newworkoutTypeElement = document.getElementById("newTrainingType");
+  var newWorkoutTypeElement = document.getElementById("newWorkoutType");
 
-  if (!workoutTypeElement || !newworkoutTypeElement) {
-    console.log("One or more elements could not be found");
+  if (!newWorkoutTypeElement) {
+    console.log("element 'newWorkoutType' could not be found");
     return;
   }
-  var workoutType = workoutTypeElement.value;
-  var newTrainingType = newworkoutTypeElement.value;
+
+  var currentWorkoutType = getActiveWorkout();
+  var newWorkoutType = newWorkoutTypeElement.value;
 
   var trainingData = getTrainingData();
-  trainingData.find((element) => element.type === workoutType).type =
-    newTrainingType;
+  trainingData.find((element) => element.type === currentWorkoutType).type =
+    newWorkoutType;
   setTrainingData(trainingData);
+  setActiveWorkout(newWorkoutType);
 }
 
 // revmove workoutType from trainingData
-function removeTrainingType(event) {
-  event.preventDefault();
-  console.log("removeTrainingType() called");
+function deleteWorkout(event) {
+  console.log("deleteWorkout() called");
 
-  // Make sure the elements exist before trying to access their values
-  var workoutTypeElement = document.getElementById("workoutType");
-
-  if (!workoutTypeElement) {
-    console.log("element 'workoutType' could not be found");
-    return;
-  }
-  var workoutType = workoutTypeElement.value;
-
+  var currentWorkoutType = getActiveWorkout();
   var trainingData = getTrainingData();
-  trainingData = trainingData.filter((element) => element.type !== workoutType);
+  trainingData = trainingData.filter(
+    (element) => element.type !== currentWorkoutType
+  );
   setTrainingData(trainingData);
 }
 
@@ -353,10 +345,11 @@ function mergeUploadedData() {
       if (!trainingDataContainsType(currentTrainingData, element.type)) {
         currentTrainingData.push(element);
       } else {
-        currentTrainingData.tags = currentTrainingData.tags.concat(
-          element.tags
+        currentWorkout = currentTrainingData.find(
+          (currentWorkout) => currentWorkout.type === element.type
         );
-        currentTrainingData.sets = currentTrainingData.sets
+        currentWorkout.tags = currentWorkout.tags.concat(element.tags);
+        currentWorkout.sets = currentWorkout.sets
           .concat(element.sets)
           .sort((a, b) => a.timecode - b.timecode);
       }

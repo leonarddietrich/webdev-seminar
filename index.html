@@ -21,8 +21,12 @@
     <a id="downloadAnchorElem" style="display: none"></a>
     <br />
     <input type="file" id="uploadedTrainingData" />
-    <button onclick="replaceUploadedData();">Replace Data</button>
-    <button onclick="mergeUploadedData();">Merge Data</button>
+    <button onclick="replaceUploadedData(); displayWorkoutTypes();">
+      Replace Data
+    </button>
+    <button onclick="mergeUploadedData(); displayWorkoutTypes();">
+      Merge Data
+    </button>
 
     <h3>show workouts by tags</h3>
     <div id="workoutTagsDisplay">tags not loaded</div>
