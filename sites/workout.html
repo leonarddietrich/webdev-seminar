@@ -21,23 +21,15 @@
   <body>
     <a href="../index.html">back</a>
 
+    <div>
+      <canvas id="myChart"></canvas>
+      <script>
+        displayData();
+      </script>
+    </div>
+
     <!-- data input form -->
     <form id="dataInput">
-      <label for="trainingType">Training Type</label>
-      <select id="trainingType" name="trainingType">
-        <option value="benchpress">Benchpress</option>
-        <option value="squat">Squat</option>
-        <option value="deadlift">Deadlift</option>
-      </select>
-      <label for="date">Date</label>
-      <input
-        type="date"
-        id="date"
-        name="date"
-        value="2021-01-01"
-        min="2021-01-01"
-        max="2021-12-31"
-      />
       <label for="weight">Weight</label>
       <input
         type="number"
@@ -47,7 +39,7 @@
         max="10000"
         step="1"
       />
-      <label for="repetition">Repetions</label>
+      <label for="repetition">Repetitions</label>
       <input
         type="number"
         id="repetition"
@@ -57,13 +49,16 @@
         step="1"
       />
       <button onclick="addData(event)">Add Data</button>
-      <button onclick="addTrainingType(event)">Add Training Type</button>
     </form>
-
-    <button onclick="displayData()">Display Data</button>
-
-    <div>
-      <canvas id="myChart"></canvas>
-    </div>
+    <table id="workoutDataDisplayTable">
+      <tr>
+        <th>Date</th>
+        <th>Weight</th>
+        <th>Repetitions</th>
+      </tr>
+    </table>
+    <script>
+      displayDataForWorkoutType();
+    </script>
   </body>
 </html>
