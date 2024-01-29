@@ -6,58 +6,47 @@
     <title>GAIN</title>
     <link rel="icon" href="imgs/icons/noodle-house.svg" type="image/svg+xml" />
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="text/javascript" src="js/utility.js"></script>
-    <script type="text/javascript" src="js/trainingData.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+    <script type="text/javascript" src="js/workoutData.js"></script>
     <script type="text/javascript" src="js/chart.js"></script>
   </head>
   <body>
-    <div id="test">Test</div>
-    <button onclick="test()">Test</button>
-    <!-- data input form -->
-    <form id="dataInput">
-      <label for="trainingType">Training Type</label>
-      <select id="trainingType" name="trainingType">
-        <option value="benchpress">Benchpress</option>
-        <option value="squat">Squat</option>
-        <option value="deadlift">Deadlift</option>
-      <label for="date">Date</label>
-      <input
-        type="date"
-        id="date"
-        name="date"
-        value="2021-01-01"
-        min="2021-01-01"
-        max="2021-12-31"
-      />
-      <label for="weight">Weight</label>
-      <input
-        type="number"
-        id="weight"
-        name="weight"
-        min="0"
-        max="10000"
-        step="1"
-      />
-      <label for="repetition">Repetions</label>
-      <input
-        type="number"
-        id="repetition"
-        name="repetition"
-        min="0"
-        max="100"
-        step="1"
-      />
-      <button onclick="addData(event)">Add Data</button>
-      <button onclick="addTrainingType(event)">Add Training Type</button>
+    <h1>GAIN</h1>
+    <h5>local data</h5>
+    <button onclick="downloadData();">Download Data</button>
+    <a id="downloadAnchorElem" style="display: none"></a>
+    <br />
+    <input type="file" id="uploadedTrainingData" />
+    <button onclick="replaceUploadedData(); displayWorkoutTypes();">
+      Replace Data
+    </button>
+    <button onclick="mergeUploadedData(); displayWorkoutTypes();">
+      Merge Data
+    </button>
+
+    <h3>show workouts by tags</h3>
+    <div id="workoutTagsDisplay">tags not loaded</div>
+
+    <h2>Workouts</h2>
+    <form>
+      <label for="workoutType">Training Type</label>
+      <input id="workoutType" name="workoutType" />
+      <button onclick="addWorkoutType(event); displayWorkoutTypes();">
+        Add Training Type
+      </button>
     </form>
+    <div id="workoutTypeDisplay">workout types not loaded</div>
 
-    <button onclick="displayData()">Display Data</button>
-
-    <div>
-      <canvas id="myChart"></canvas>
-    </div>
-
+    <br />
     <a href="sites/impressum.html">Impressum</a>
+
+    <!-- load traingin types into trainingTypeList -->
+    <script>
+      displayWorkoutTags();
+      displayWorkoutTypes();
+    </script>
   </body>
 </html>

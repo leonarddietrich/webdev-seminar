@@ -5,26 +5,32 @@ var chart;
 // load trainingData from sessionStorage
 function getTrainingData() {
   console.log("getTrainingData() called");
-  var trainingData = JSON.parse(sessionStorage.getItem("trainingData"));
+  var trainingData = JSON.parse(localStorage.getItem("trainingData"));
   if (!trainingData) {
     trainingData = [];
-    sessionStorage.setItem("trainingData", JSON.stringify(trainingData));
   }
   return trainingData;
 }
 
-// refresh chart event
-function displayData(event) {
-  // event.preventDefault();
-  console.log("displayData() called");
-
-  // Make sure the elements exist before trying to access their values
-  var trainingTypeElement = document.getElementById("trainingType");
-  if (!trainingTypeElement) {
-    console.log("element 'trainingType' could not be found");
+function getActiveWorkout() {
+  console.log("getActiveWorkout() called");
+  var activeWorkout = sessionStorage.getItem("activeWorkout");
+  if (!activeWorkout) {
+    console.log("activeWorkout not set");
     return;
   }
-  var trainingType = trainingTypeElement.value;
+  return activeWorkout;
+}
+
+// refresh chart event
+function displayData(event) {
+  console.log("displayData() called");
+
+  var trainingType = getActiveWorkout();
+  if (!trainingType) {
+    console.log("trainingType not set");
+    return;
+  }
 
   var trainingsData = getData(trainingType);
   displayChart(trainingsData);
