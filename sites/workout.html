@@ -18,14 +18,17 @@
     <script type="text/javascript" src="../js/chart.js"></script>
   </head>
   <body>
+    <h1>GAIN</h1>
     <a href="../index.html">back</a>
+    <h2 id="workoutTitle"></h2>
 
-    <div>
-      <canvas id="myChart"></canvas>
-      <script>
-        displayData();
-      </script>
-    </div>
+    <div id="tagsForWorkoutDisplay">tags not loaded</div>
+    <script>
+      displayTagsForWorkout();
+    </script>
+
+    <br />
+    <br />
 
     <!-- data input -->
     <div id="dataInput">
@@ -49,6 +52,30 @@
       />
       <button onclick="addData(event)">Add Data</button>
     </div>
+
+    <br />
+    <label for="suggestions">Add Tag</label>
+    <input type="text" id="addTagInput" list="suggestions" />
+    <datalist id="suggestions">
+      <option value="Black"></option>
+      <option value="Red"></option>
+      <option value="Green"></option>
+      <option value="Blue"></option>
+      <option value="White"></option>
+    </datalist>
+    <button onclick="addTagToWorkout(event)">submit</button>
+
+    <br />
+
+    <div>
+      <canvas id="myChart"></canvas>
+      <script>
+        displayData();
+      </script>
+    </div>
+
+    <br />
+
     <table id="workoutDataDisplayTable">
       <tr>
         <th>Date</th>
@@ -60,7 +87,9 @@
     <br />
     <div>
       <input type="text" id="newWorkoutType" />
-      <button onclick="renameWorkout();">Rename Workout</button>
+      <button onclick="renameWorkout(); setWorkoutTitle();">
+        Rename Workout
+      </button>
     </div>
     <br />
     <br />
@@ -70,6 +99,7 @@
     </button>
 
     <script>
+      setWorkoutTitle();
       displayDataForWorkoutType();
     </script>
   </body>

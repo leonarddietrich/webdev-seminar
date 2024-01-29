@@ -11,33 +11,37 @@
       src="https://cdn.jsdelivr.net/npm/chart.js"
     ></script>
     <script type="text/javascript" src="js/workoutData.js"></script>
-    <script type="text/javascript" src="js/chart.js"></script>
+    <!-- <script type="text/javascript" src="js/chart.js"></script> -->
   </head>
   <body>
     <h1>GAIN</h1>
-    <h5>local data</h5>
+    <h5>local data test</h5>
     <button onclick="downloadData();">Download Data</button>
     <a id="downloadAnchorElem" style="display: none"></a>
     <br />
-    <input type="file" id="uploadedTrainingData" />
-    <button onclick="replaceUploadedData(); displayWorkoutTypes();">
-      Replace Data
-    </button>
-    <button onclick="mergeUploadedData(); displayWorkoutTypes();">
-      Merge Data
-    </button>
-
-    <h3>show workouts by tags</h3>
-    <div id="workoutTagsDisplay">tags not loaded</div>
-
-    <h2>Workouts</h2>
     <form>
-      <label for="workoutType">Training Type</label>
-      <input id="workoutType" name="workoutType" />
-      <button onclick="addWorkoutType(event); displayWorkoutTypes();">
-        Add Training Type
+      <input type="file" id="uploadedTrainingData" />
+      <button onclick="replaceUploadedData(); displayWorkoutTypes();">
+        Replace Data
+      </button>
+      <button onclick="mergeUploadedData(); displayWorkoutTypes();">
+        Merge Data
       </button>
     </form>
+    <h2>Workouts</h2>
+
+    <form>
+      <label for="workoutType">Add Workout</label>
+      <input id="workoutType" name="workoutType" />
+      <button onclick="addWorkoutType(event); displayWorkoutTypes();">
+        Add Workout
+      </button>
+    </form>
+
+    <h3>Filter workouts by tags</h3>
+    <div id="workoutTagsDisplay">tags not loaded</div>
+
+    <h3>Select Workout</h3>
     <div id="workoutTypeDisplay">workout types not loaded</div>
 
     <br />

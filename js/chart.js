@@ -53,10 +53,9 @@ function getData(trainingType) {
     .sets.forEach((element) => {
       var date = new Date(element.timecode);
       trainingsData.dates.push(
-        date.toISOString().substring(0, 10) +
-          " " +
-          date.toISOString().substring(11, 16) +
-          " Uhr"
+        date.toISOString().substring(0, 10)
+        // + " "
+        // + date.toISOString().substring(11, 16) +" Uhr"
       );
       trainingsData.reps.push(element.repetitions);
       trainingsData.weight.push(element.weight);
@@ -71,7 +70,6 @@ function displayChart(dispayData) {
   console.log("displayChart() called");
   console.log(dispayData);
   const ctx = document.getElementById("myChart");
-
   if (chart) {
     chart.destroy();
   }
@@ -82,8 +80,8 @@ function displayChart(dispayData) {
       labels: dispayData.dates,
       datasets: [
         {
-          label: "repetitions x weight",
-          data: multiplyArray(dispayData.reps, dispayData.weight),
+          label: "weight x repetitions",
+          data: multiplyArray(dispayData.weight, dispayData.reps),
           borderWidth: 5,
         },
       ],
@@ -100,7 +98,7 @@ function multiplyArray(array1, array2) {
   console.log(array2);
   var result = [];
   for (var i = 0; i < array1.length; i++) {
-    result.push(array1[i] * array2[i]);
+    result.push(array1[i] * array1[i] * array2[i]);
   }
   console.log(result);
   return result;
