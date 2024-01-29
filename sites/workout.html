@@ -16,32 +16,27 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" type="text/css" href="../css/styles.css" />
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm/chart.js"
-    ></script>
-    <script type="text/javascript" src="../js/workoutData.js"></script>
-    <script type="text/javascript" src="../js/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/workoutData.js"></script>
+    <script src="../js/chart.js"></script>
   </head>
-  <body>
+  <body onload="displayTagsForWorkout();">
     <h1>GAIN</h1>
     <a href="../index.html" style="color: aqua">back</a>
-    <h2 id="workoutTitle"></h2>
+    <h2 id="workoutTitle">[title loaded from active workout]</h2>
 
     <div id="tagsForWorkoutDisplay">tags not loaded</div>
-    <script>
-      displayTagsForWorkout();
-    </script>
 
     <br />
     <br />
 
     <!-- data input -->
     <div id="dataInput">
-      <label for "date">Date</label>
+      <label for="date">Date</label>
       <input type="date" id="date" name="date" />
+
       <script>
-        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById("date").valueAsDate = new Date();
       </script>
       <label for="weight">Weight</label>
       <input
@@ -65,14 +60,6 @@
     </div>
 
     <br />
-    <label for="addTagInput">Add Tag</label>
-    <input type="text" id="addTagInput" list="tagSuggestions" />
-    <datalist id="tagSuggestions"></datalist>
-    <script>
-      fillTagSuggestions();
-    </script>
-    <button onclick="addTagToWorkout(event)">submit</button>
-
     <br />
 
     <div>
@@ -83,8 +70,9 @@
     </div>
 
     <br />
+    <br />
 
-    <table id="workoutDataDisplayTable" class="table">
+    <table id="workoutDataDisplayTable" class="table table-striped table-hover">
       <thead>
         <tr>
           <th>Date</th>
@@ -105,9 +93,130 @@
     <br />
     <br />
 
-    <button>
-      <a href="../index.html" onclick="deleteWorkout()">Delete Workout</a>
+    <a
+      href="../index.html"
+      onclick="deleteWorkout()"
+      class="btn btn-danger"
+      role="button"
+      >Delete Workout</a
+    >
+
+    <!-- add tag modal -->
+    <div
+      class="modal fade"
+      id="addTagModal"
+      tabindex="-1"
+      aria-labelledby="addTagModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addTagModalLabel">Add Tag</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <label for="addTagInput">Add Tag</label>
+            <input type="text" id="addTagInput" list="tagSuggestions" />
+            <datalist id="tagSuggestions"></datalist>
+            <script>
+              fillTagSuggestions();
+            </script>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              onclick="addTagToWorkout(event)"
+            >
+              Save Tag
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- test trigger modify set modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#modifySetModal"
+    >
+      Launch modify set modal
     </button>
+
+    <!-- modify set modal -->
+    <div
+      class="modal fade"
+      id="modifySetModal"
+      tabindex="-1"
+      aria-labelledby="modifySetModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modifySetModalLabel">
+              Modify Set
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <label for="date">Date</label>
+            <input type="date" id="dateModal" name="date" />
+            <script>
+              document.getElementById("dateModal").valueAsDate = new Date();
+            </script>
+            <label for="weightModal">Weight</label>
+            <input
+              type="number"
+              id="weightModal"
+              name="weight"
+              min="0"
+              max="10000"
+              step="1"
+            />
+            <label for="repetitionModal">Repetitions</label>
+            <input
+              type="number"
+              id="repetitionModal"
+              name="repetition"
+              min="0"
+              max="100"
+              step="1"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Remove Set
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       setWorkoutTitle();

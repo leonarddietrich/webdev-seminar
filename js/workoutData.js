@@ -452,9 +452,19 @@ function displayTagsForWorkout() {
   );
   var content = "";
   trainingData.tags.forEach((element) => {
-    content += `<button>${element}</button>`;
+    content += `<button type="button" class="btn btn-secondary" onclick="revmoveTagFromWorkout('${element}'); displayTagsForWorkout();">${element}</button>`;
   });
+  content += `<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTagModal">+</button>`;
   tagsElement.innerHTML = content;
+}
+
+function revmoveTagFromWorkout(tag) {
+  console.log("revmoveTagFromWorkout() called");
+  var workoutType = getActiveWorkout();
+  var trainingData = getTrainingData();
+  var workout = trainingData.find((element) => element.type === workoutType);
+  workout.tags = workout.tags.filter((element) => element !== tag);
+  setTrainingData(trainingData);
 }
 
 function addTagToWorkout() {
