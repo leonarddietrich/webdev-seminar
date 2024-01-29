@@ -293,7 +293,7 @@ function displayWorkoutTypes() {
   var workoutTypes = getWorkoutTypes();
   var content = "";
   workoutTypes.forEach((element) => {
-    content += `<button><a href="sites/workout.html" onclick="setActiveWorkout('${element}')">${element}</a></button>`;
+    content += `<button class="col"><a href="sites/workout.html" onclick="setActiveWorkout('${element}')">${element}</a></button>`;
     // content += `<button onclick="changeActiveWorkout('${element}'); onclick="location.href='../sites/workout.html'"">${element}</button>`;
   });
   workoutTypeElement.innerHTML = content;
