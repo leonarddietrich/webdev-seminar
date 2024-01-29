@@ -133,13 +133,12 @@ function addData(event) {
     return;
   }
 
-  trainingData
-    .find((element) => element.type === workoutType)
-    .sets.push({
-      timecode: timecode,
-      repetitions: repetitions,
-      weight: weight,
-    });
+  workoutData = trainingData.find((element) => element.type === workoutType);
+  workoutData.sets.push({
+    timecode: delayTimecodeUntilUnique(workoutData, timecode),
+    repetitions: repetitions,
+    weight: weight,
+  });
 
   setTrainingData(trainingData);
 
@@ -521,4 +520,36 @@ function mergeLists(a, b, predicate) {
     c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)
   );
   return c;
+}
+
+function timecodeAlreadyExists(workoutData, timecode) {
+  return workoutData.sets.some((element) => element.timecode === timecode);
+}
+
+function delayTimecodeUntilUnique(workoutData, timecode) {
+  while (timecodeAlreadyExists(workoutData, timecode)) {
+    timecode++;
+  }
+  return timecode;
+}
+
+// one time function to make all timecodes unique
+function makeAllTimingsUnique() {
+  console.log("makeAllTimingsUnique() called");
+  var trainingData = getTrainingData();
+  console.log(trainingData);
+  trainingData.forEach((workoutData) => {
+    console.log(workoutData);
+    for (let i = 0; i < workoutData.sets.length; i++) {
+      timecode = workoutData.sets[i].timecode;
+      if (timecodeAlreadyExists(workoutData, timecode)) {
+        for (let j = i + 1; j < workoutData.sets.length; j++) {
+          if (timecode === workoutData.sets[j].timecode) {
+            workoutData.sets[j].timecode += 1;
+          }
+        }
+      }
+    }
+  });
+  setTrainingData(trainingData);
 }
