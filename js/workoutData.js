@@ -28,6 +28,12 @@ function getTrainingData() {
 // save trainingData to sessionStorage
 function setTrainingData(trainingData) {
   console.log("setTrainingData() called");
+
+  trainingData = trainingData.sort((a, b) => a.type.localeCompare(b.type));
+  trainingData.forEach((element) => {
+    element.sets = element.sets.sort((a, b) => a.timecode - b.timecode);
+  });
+
   localStorage.setItem("trainingData", JSON.stringify(trainingData));
 }
 
@@ -100,21 +106,23 @@ function addData(event) {
   console.log("addData() called");
 
   // Make sure the elements exist before trying to access their values
+  var dateElement = document.getElementById("date");
   var weightElement = document.getElementById("weight");
   var repetitionsElement = document.getElementById("repetition");
-  if (!weightElement || !repetitionsElement) {
+  if (!dateElement || !weightElement || !repetitionsElement) {
     console.log("One or more elements could not be found");
     return;
   }
+  var date = new Date(dateElement.value);
   var weight = parseFloat(weightElement.value);
   var repetitions = parseInt(repetitionsElement.value);
-  if (!weight || weight <= 0 || !repetitions || repetitions <= 0) {
+  if (!date || !weight || weight <= 0 || !repetitions || repetitions <= 0) {
     console.log("weight or repetitions <= 0");
     return;
   }
 
   var workoutType = getActiveWorkout();
-  var timecode = new Date().getTime();
+  var timecode = new Date(date).getTime();
 
   console.log(workoutType, new Date(timecode), repetitions, weight);
 
@@ -135,23 +143,11 @@ function addData(event) {
 
   setTrainingData(trainingData);
 
-  // add to first table entry
-  var tableRef = document
-    .getElementById("workoutDataDisplayTable")
-    .getElementsByTagName("tbody")[0];
-  if (!tableRef) {
-    console.log("element 'workoutDataDisplayTable' could not be found");
-    return;
-  }
-  var newRow = tableRef.insertRow(1);
-  newRow.innerHTML = `<tr>
-      <td>${new Date(timecode).toISOString().substring(0, 10)}</td>
-      <td>${weight}</td>
-      <td>${repetitions}</td>
-      </tr>`;
-
   // refresh chart
   displayData(event);
+
+  // refresh data table
+  displayDataForWorkoutType();
 }
 
 function trainingDataContainsType(trainingData, workoutType) {
@@ -242,15 +238,24 @@ function getUsableWorkoutTags() {
   trainingData.forEach((element) => {
     if (element.tags.length > 0) {
       if (usedWorkoutTags.length == 0) {
-        usableWorkoutTags.push(element.tags);
+        usableWorkoutTags = mergeLists(
+          usableWorkoutTags,
+          element.tags,
+          (a, b) => a === b
+        );
       } else if (usedWorkoutTags.every((tag) => element.tags.includes(tag))) {
         usableWorkoutTags.push(
-          element.tags.filter((tag) => !usedWorkoutTags.includes(tag))
+          element.tags.filter(
+            (tag) =>
+              !(
+                usedWorkoutTags.includes(tag) || usableWorkoutTags.includes(tag)
+              )
+          )
         );
       }
     }
   });
-  console.log(usableWorkoutTags.flat());
+  console.log(usableWorkoutTags);
   return usableWorkoutTags.flat();
 }
 
@@ -266,18 +271,18 @@ function displayWorkoutTags() {
   var usableWorkoutTags = getUsableWorkoutTags();
   var content = "";
 
-  usableWorkoutTags.forEach((element) => {
-    content += `<button onclick="activateWorkoutTag('${element}')">${element}</button>`;
-  });
-
   var activeWorkoutTags = getActiveWorkoutTags();
   if (Array.isArray(activeWorkoutTags)) {
     activeWorkoutTags.forEach((element) => {
-      content += `<button onclick="deactivateWorkoutTag('${element}')">${element}</button>`;
+      content += `<button class="p-2 text-primary-emphasis"" onclick="deactivateWorkoutTag('${element}')">${element}</button>`;
     });
   }
 
-  content += `<button onclick="resetTags()">RESET</button>`;
+  usableWorkoutTags.forEach((element) => {
+    content += `<button class="p-2"" onclick="activateWorkoutTag('${element}')">${element}</button>`;
+  });
+
+  content += `<button class="p-2 text-danger-emphasis"" onclick="resetTags()">RESET</button>`;
   workoutTagsDisplayElement.innerHTML = content;
 }
 
@@ -293,7 +298,7 @@ function displayWorkoutTypes() {
   var workoutTypes = getWorkoutTypes();
   var content = "";
   workoutTypes.forEach((element) => {
-    content += `<button class="col"><a href="sites/workout.html" onclick="setActiveWorkout('${element}')">${element}</a></button>`;
+    content += `<button class="col p-2"><a href="sites/workout.html" onclick="setActiveWorkout('${element}')">${element}</a></button>`;
     // content += `<button onclick="changeActiveWorkout('${element}'); onclick="location.href='../sites/workout.html'"">${element}</button>`;
   });
   workoutTypeElement.innerHTML = content;
@@ -303,13 +308,18 @@ function displayWorkoutTypes() {
 function displayDataForWorkoutType() {
   console.log("displayDataForWorkoutType() called");
 
-  var tableRef = document
-    .getElementById("workoutDataDisplayTable")
-    .getElementsByTagName("tbody")[0];
-  if (!tableRef) {
+  var tableElement = document.getElementById("workoutDataDisplayTable");
+  if (!tableElement) {
     console.log("element 'workoutDataDisplayTable' could not be found");
     return;
   }
+
+  var tableRef = tableElement.getElementsByTagName("tbody")[0];
+  if (!tableRef) {
+    console.log(tableElement);
+    return;
+  }
+  tableRef.innerHTML = "";
 
   var workoutType = getActiveWorkout();
   var trainingData = getTrainingData().find(
@@ -398,10 +408,19 @@ function mergeUploadedData() {
         currentWorkout = currentTrainingData.find(
           (currentWorkout) => currentWorkout.type === element.type
         );
-        currentWorkout.tags = currentWorkout.tags.concat(element.tags);
-        currentWorkout.sets = currentWorkout.sets
-          .concat(element.sets)
-          .sort((a, b) => a.timecode - b.timecode);
+        currentWorkout.tags = mergeLists(
+          currentWorkout.tags,
+          element.tags,
+          (a, b) => a === b
+        );
+        currentWorkout.sets = mergeLists(
+          currentWorkout.sets,
+          element.sets,
+          (a, b) =>
+            a.timecode === b.timecode &&
+            a.weight === b.weight &&
+            a.repetitions === b.repetitions
+        ).sort((a, b) => a.timecode - b.timecode);
       }
     });
     setTrainingData(currentTrainingData);
@@ -456,4 +475,40 @@ function addTagToWorkout() {
   setTrainingData(trainingData);
 
   displayTagsForWorkout();
+}
+
+function fillTagSuggestions() {
+  console.log("fillTagSuggestions() called");
+  var tagSuggestionsElement = document.getElementById("tagSuggestions");
+  if (!tagSuggestionsElement) {
+    console.log("element 'tagSuggestions' could not be found");
+    return;
+  }
+
+  var allTags = getAllTags();
+  var content = "";
+  allTags.forEach((element) => {
+    content += `<option value="${element}"></option>`;
+  });
+  tagSuggestionsElement.innerHTML = content;
+}
+
+function getAllTags() {
+  console.log("getAllTags() called");
+  var trainingData = getTrainingData();
+  var tags = [];
+  trainingData.forEach((element) => {
+    tags = mergeLists(tags, element.tags, (a, b) => a === b);
+  });
+  return tags;
+}
+
+function mergeLists(a, b, predicate) {
+  // copy to avoid side effects
+  const c = [...a];
+  // add all items from B to copy C if they're not already present
+  b.forEach((bItem) =>
+    c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)
+  );
+  return c;
 }
