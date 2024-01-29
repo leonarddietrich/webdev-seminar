@@ -241,19 +241,17 @@ function getUsableWorkoutTags() {
   var usableWorkoutTags = [];
   trainingData.forEach((element) => {
     if (element.tags.length > 0) {
-      if (Array.isArray(usedWorkoutTags) && usedWorkoutTags.length == 0) {
+      if (usedWorkoutTags.length == 0) {
         usableWorkoutTags.push(element.tags);
+      } else if (usedWorkoutTags.every((tag) => element.tags.includes(tag))) {
+        usableWorkoutTags.push(
+          element.tags.filter((tag) => !usedWorkoutTags.includes(tag))
+        );
       }
-    } else if (
-      Array.isArray(usedWorkoutTags) &&
-      usedWorkoutTags.every((tag) => element.tags.includes(tag))
-    )
-      usableWorkoutTags.push(
-        element.tags.filter((tag) => !usedWorkoutTags.includes(tag))
-      );
+    }
   });
-  console.log(usableWorkoutTags);
-  return usableWorkoutTags;
+  console.log(usableWorkoutTags.flat());
+  return usableWorkoutTags.flat();
 }
 
 function displayWorkoutTags() {
