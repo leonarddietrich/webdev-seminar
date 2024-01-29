@@ -19,6 +19,11 @@
   background-image: url("../img/vantanoblack.jpg");
 }
 
+a {
+  text-decoration: none;
+  color: #f2f5f4;
+}
+
 [data-bs-theme="dark"] .element {
   color: var(--bs-primary-text-emphasis);
   background-color: var(--bs-primary-bg-subtle);
