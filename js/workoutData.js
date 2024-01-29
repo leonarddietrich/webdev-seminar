@@ -32,8 +32,7 @@ function setTrainingData(trainingData) {
 }
 
 function setActiveWorkout(workoutType) {
-  console.log("changeActiveWorkout() called");
-  console.log("workoutType: " + workoutType);
+  console.log("setActiveWorkout() called");
   sessionStorage.setItem("activeWorkout", workoutType);
 }
 
@@ -42,43 +41,26 @@ function getActiveWorkout() {
   var activeWorkout = sessionStorage.getItem("activeWorkout");
   if (!activeWorkout) {
     console.log("activeWorkout not set");
-    return;
+    return "";
   }
   return activeWorkout;
 }
 
-// inistialize trainingData
-// function initTrainingData() {
-//   console.log("initTrainingData() called");
-//   // do nothin if trainingData already exists
-//   if (getTrainingData().length > 0) {
-//     return;
-//   }
-//   var trainingData = [
-//     {
-//       type: "benchpress",
-//       tags: ["push"],
-//       sets: [
-//         {
-//           timecode: new Date(2024, 1, 1, 20, 10, 3).getTime(),
-//           repetitions: 1,
-//           weight: 50,
-//         },
-//         {
-//           timecode: new Date(2024, 1, 1, 20, 13, 12).getTime(),
-//           repetitions: 45,
-//           weight: 3,
-//         },
-//         {
-//           timecode: new Date(2024, 1, 1, 20, 18, 1).getTime(),
-//           repetitions: 30,
-//           weight: 18,
-//         },
-//       ],
-//     },
-//   ];
-//   setTrainingData(trainingData);
-// }
+function setActiveWorkoutTags(tags) {
+  console.log("setActiveWorkoutTags() called");
+  sessionStorage.setItem("activeWorkoutTags", JSON.stringify(tags));
+}
+
+function getActiveWorkoutTags() {
+  console.log("getActiveWorkoutTags() called");
+  var activeWorkout = JSON.parse(sessionStorage.getItem("activeWorkoutTags"));
+  if (!activeWorkout) {
+    console.log("activeWorkoutTags not set");
+    setActiveWorkoutTags([]);
+    return [];
+  }
+  return activeWorkout;
+}
 
 function addWorkoutType(event) {
   event.preventDefault();
@@ -92,6 +74,10 @@ function addWorkoutType(event) {
     return;
   }
   var workoutType = workoutTypeElement.value;
+  if (!workoutType) {
+    console.log("workoutType not set");
+    return;
+  }
   var trainingData = getTrainingData();
 
   if (trainingDataContainsType(trainingData, workoutType)) {
@@ -174,14 +160,18 @@ function trainingDataContainsType(trainingData, workoutType) {
 }
 
 // get all workout types from training data
-function getWorkoutTypes(tag) {
+function getWorkoutTypes() {
   console.log("getWorkoutTypes() called");
   var trainingData = getTrainingData();
   var workoutTypes = [];
+  var activeWorkoutTags = getActiveWorkoutTags();
   trainingData.forEach((element) => {
-    if (tag) {
-      if (element.tags.includes(tag)) workoutTypes.push(element.type);
-    } else workoutTypes.push(element.type);
+    if (
+      Array.isArray(activeWorkoutTags) &&
+      activeWorkoutTags.every((tag) => element.tags.includes(tag))
+    )
+      workoutTypes.push(element.type);
+    else if (!activeWorkoutTags) workoutTypes.push(element.type);
   });
   return workoutTypes;
 }
@@ -219,6 +209,53 @@ function deleteWorkout(event) {
   setTrainingData(trainingData);
 }
 
+function activateWorkoutTag(tag) {
+  console.log("activateWorkoutTag() called");
+  var workoutTags = getActiveWorkoutTags();
+  workoutTags.push(tag);
+  setActiveWorkoutTags(workoutTags);
+  displayWorkoutTags();
+  displayWorkoutTypes();
+}
+
+function deactivateWorkoutTag(tag) {
+  console.log("deactivateWorkoutTag() called");
+  var workoutTags = getActiveWorkoutTags();
+  workoutTags = workoutTags.filter((element) => element !== tag);
+  setActiveWorkoutTags(workoutTags);
+  displayWorkoutTags();
+  displayWorkoutTypes();
+}
+
+function resetTags() {
+  console.log("resetTags() called");
+  setActiveWorkoutTags([]);
+  displayWorkoutTags();
+  displayWorkoutTypes();
+}
+
+function getUsableWorkoutTags() {
+  console.log("getUsableWorkoutTags() called");
+  var trainingData = getTrainingData();
+  var usedWorkoutTags = getActiveWorkoutTags();
+  var usableWorkoutTags = [];
+  trainingData.forEach((element) => {
+    if (element.tags.length > 0) {
+      if (Array.isArray(usedWorkoutTags) && usedWorkoutTags.length == 0) {
+        usableWorkoutTags.push(element.tags);
+      }
+    } else if (
+      Array.isArray(usedWorkoutTags) &&
+      usedWorkoutTags.every((tag) => element.tags.includes(tag))
+    )
+      usableWorkoutTags.push(
+        element.tags.filter((tag) => !usedWorkoutTags.includes(tag))
+      );
+  });
+  console.log(usableWorkoutTags);
+  return usableWorkoutTags;
+}
+
 function displayWorkoutTags() {
   console.log("displayTags() called");
 
@@ -228,24 +265,26 @@ function displayWorkoutTags() {
     return;
   }
 
-  var trainingData = getTrainingData();
-  var workoutTags = [];
-  trainingData.forEach((element) => {
-    console.log(element.type + " => " + element.tags);
-    if (element.tags.length > 0) workoutTags.push(element.tags);
-  });
-  console.log("workoutTags: " + workoutTags);
+  var usableWorkoutTags = getUsableWorkoutTags();
   var content = "";
 
-  workoutTags.forEach((element) => {
-    content += `<button onclick="displayWorkoutTypes('${element}')">${element}</button>`;
+  usableWorkoutTags.forEach((element) => {
+    content += `<button onclick="activateWorkoutTag('${element}')">${element}</button>`;
   });
-  content += `<button onclick="displayWorkoutTypes()">RESET</button>`;
+
+  var activeWorkoutTags = getActiveWorkoutTags();
+  if (Array.isArray(activeWorkoutTags)) {
+    activeWorkoutTags.forEach((element) => {
+      content += `<button onclick="deactivateWorkoutTag('${element}')">${element}</button>`;
+    });
+  }
+
+  content += `<button onclick="resetTags()">RESET</button>`;
   workoutTagsDisplayElement.innerHTML = content;
 }
 
 // list workoutTypes
-function displayWorkoutTypes(tag) {
+function displayWorkoutTypes() {
   console.log("displayWorkoutTypes() called");
 
   var workoutTypeElement = document.getElementById("workoutTypeDisplay");
@@ -253,7 +292,7 @@ function displayWorkoutTypes(tag) {
     console.log("element 'workoutTypeList' could not be found");
     return;
   }
-  var workoutTypes = getWorkoutTypes(tag);
+  var workoutTypes = getWorkoutTypes();
   var content = "";
   workoutTypes.forEach((element) => {
     content += `<button><a href="sites/workout.html" onclick="setActiveWorkout('${element}')">${element}</a></button>`;
@@ -262,7 +301,7 @@ function displayWorkoutTypes(tag) {
   workoutTypeElement.innerHTML = content;
 }
 
-// list trainingData
+// list training data
 function displayDataForWorkoutType() {
   console.log("displayDataForWorkoutType() called");
 
@@ -279,7 +318,7 @@ function displayDataForWorkoutType() {
     (element) => element.type === workoutType
   );
 
-  // reverse sets
+  // reverse sets so the newest is displayed on top
   trainingData.sets.reverse();
 
   trainingData.sets.forEach((element) => {
@@ -370,4 +409,53 @@ function mergeUploadedData() {
     setTrainingData(currentTrainingData);
   };
   reader.readAsText(file);
+}
+
+function setWorkoutTitle() {
+  var workoutTitleElement = document.getElementById("workoutTitle");
+  if (!workoutTitleElement) {
+    console.log("element 'workoutTitle' could not be found");
+    return;
+  }
+  var workoutType = getActiveWorkout();
+  workoutType = workoutType.charAt(0).toUpperCase() + workoutType.slice(1);
+  workoutTitleElement.innerHTML = workoutType;
+}
+
+function displayTagsForWorkout() {
+  console.log("displayTagsForWorkout() called");
+  var tagsElement = document.getElementById("tagsForWorkoutDisplay");
+  if (!tagsElement) {
+    console.log("element 'tagsForWorkoutDisplay' could not be found");
+    return;
+  }
+  var workoutType = getActiveWorkout();
+  var trainingData = getTrainingData().find(
+    (element) => element.type === workoutType
+  );
+  var content = "";
+  trainingData.tags.forEach((element) => {
+    content += `<button>${element}</button>`;
+  });
+  tagsElement.innerHTML = content;
+}
+
+function addTagToWorkout() {
+  console.log("addTagToWorkout() called");
+  var tagElement = document.getElementById("addTagInput");
+  if (!tagElement) {
+    console.log("element 'addTagInput' could not be found");
+    return;
+  }
+  var tag = tagElement.value;
+  if (!tag) {
+    console.log("tag not set");
+    return;
+  }
+  var workoutType = getActiveWorkout();
+  var trainingData = getTrainingData();
+  trainingData.find((element) => element.type === workoutType).tags.push(tag);
+  setTrainingData(trainingData);
+
+  displayTagsForWorkout();
 }
