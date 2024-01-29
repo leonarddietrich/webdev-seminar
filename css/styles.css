@@ -13,8 +13,9 @@ body {
   /* text-shadow: 2px 2px 0px #161618; */
 }
 
-.impressum {
-  background-image: url("../img/vantanoblack.jpg");
+a {
+  text-decoration: none;
+  color: #f2f5f4;
 }
 
 a {
