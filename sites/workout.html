@@ -32,12 +32,6 @@
 
     <!-- data input -->
     <div id="dataInput">
-      <label for="date">Date</label>
-      <input type="date" id="date" name="date" />
-
-      <script>
-        document.getElementById("date").valueAsDate = new Date();
-      </script>
       <label for="weight">Weight</label>
       <input
         type="number"
@@ -56,8 +50,20 @@
         max="100"
         step="1"
       />
-      <button onclick="addData(event)">Add Data</button>
+      <button type="button" class="btn btn-primary" onclick="addSet(event)">
+        Add Set
+      </button>
     </div>
+
+    <br />
+    <button
+      type="button"
+      class="btn btn-secondary"
+      data-bs-toggle="modal"
+      data-bs-target="#addCustomSetModal"
+    >
+      Add Custom Set
+    </button>
 
     <br />
     <br />
@@ -142,15 +148,67 @@
       </div>
     </div>
 
-    <!-- test trigger modify set modal -->
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#modifySetModal"
+    <!-- add custom set modal -->
+    <div
+      class="modal fade"
+      id="addCustomSetModal"
+      tabindex="-1"
+      aria-labelledby="addCustomSetModalLabel"
+      aria-hidden="true"
     >
-      Launch modify set modal
-    </button>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addCustomSetModalLabel">
+              Modify Set
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <label for="customSetDate">Date</label>
+            <input type="date" id="customSetDate" name="date" />
+            <script>
+              document.getElementById("customSetDate").valueAsDate = new Date();
+            </script>
+            <br />
+            <label for="customSetWeight">Weight</label>
+            <input
+              type="number"
+              id="customSetWeight"
+              name="weight"
+              min="0"
+              max="10000"
+              step="1"
+            />
+            <br />
+            <label for="customSetRepetition">Repetitions</label>
+            <input
+              type="number"
+              id="customSetRepetition"
+              name="repetition"
+              min="0"
+              max="100"
+              step="1"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              onclick="addCustomSet(event)"
+            >
+              Add Set
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- modify set modal -->
     <div
@@ -174,24 +232,23 @@
             ></button>
           </div>
           <div class="modal-body">
-            <label for="date">Date</label>
-            <input type="date" id="dateModal" name="date" />
-            <script>
-              document.getElementById("dateModal").valueAsDate = new Date();
-            </script>
-            <label for="weightModal">Weight</label>
+            <label for="modifySetDate">Date</label>
+            <input type="date" id="modifySetDate" name="date" />
+            <br />
+            <label for="modifySetWeight">Weight</label>
             <input
               type="number"
-              id="weightModal"
+              id="modifySetWeight"
               name="weight"
               min="0"
               max="10000"
               step="1"
             />
-            <label for="repetitionModal">Repetitions</label>
+            <br />
+            <label for="modifySetRepetition">Repetitions</label>
             <input
               type="number"
-              id="repetitionModal"
+              id="modifySetRepetition"
               name="repetition"
               min="0"
               max="100"
@@ -203,6 +260,7 @@
               type="button"
               class="btn btn-danger"
               data-bs-dismiss="modal"
+              onclick="removeSet(event)"
             >
               Remove Set
             </button>
@@ -210,6 +268,7 @@
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
+              onclick="modifySet(event)"
             >
               Save changes
             </button>

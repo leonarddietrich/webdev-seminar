@@ -68,6 +68,21 @@ function getActiveWorkoutTags() {
   return activeWorkout;
 }
 
+function setActiveModifySet(set) {
+  console.log("setActiveModifySet() called");
+  sessionStorage.setItem("activeModifySet", JSON.stringify(set));
+}
+
+function getActiveModifySet() {
+  console.log("getActiveModifySet() called");
+  var activeModifySet = JSON.parse(sessionStorage.getItem("activeModifySet"));
+  if (!activeModifySet) {
+    console.log("activeModifySet not set");
+    return null;
+  }
+  return activeModifySet;
+}
+
 function addWorkoutType(event) {
   event.preventDefault();
   console.log("addWorkoutType() called");
@@ -101,33 +116,68 @@ function addWorkoutType(event) {
 }
 
 // add a set to the trainingData
-function addData(event) {
+function addSet(event) {
   event.preventDefault();
-  console.log("addData() called");
+  console.log("addSet() called");
 
   // Make sure the elements exist before trying to access their values
-  var dateElement = document.getElementById("date");
   var weightElement = document.getElementById("weight");
   var repetitionsElement = document.getElementById("repetition");
-  if (!dateElement || !weightElement || !repetitionsElement) {
+  if (!weightElement || !repetitionsElement) {
     console.log("One or more elements could not be found");
     return;
   }
-  var date = new Date(dateElement.value);
   var weight = parseFloat(weightElement.value);
   var repetitions = parseInt(repetitionsElement.value);
-  if (!date || !weight || weight <= 0 || !repetitions || repetitions <= 0) {
+  if (!weight || weight <= 0 || !repetitions || repetitions <= 0) {
     console.log("weight or repetitions <= 0");
     return;
   }
 
   var workoutType = getActiveWorkout();
-  var timecode = new Date(date).getTime();
+  var timecode = new Date().getTime();
 
-  console.log(workoutType, new Date(timecode), repetitions, weight);
+  addSetToData(workoutType, timecode, repetitions, weight);
+}
+
+function addCustomSet(event) {
+  event.preventDefault();
+  console.log("addCustomSet() called");
+
+  // Make sure the elements exist before trying to access their values
+  var DateElement = document.getElementById("customSetDate");
+  var weightElement = document.getElementById("customSetWeight");
+  var repetitionsElement = document.getElementById("customSetRepetition");
+  if (!DateElement || !weightElement || !repetitionsElement) {
+    console.log("One or more elements could not be found");
+    return;
+  }
+
+  var timecode = new Date(DateElement.value).getTime();
+  var weight = parseFloat(weightElement.value);
+  var repetitions = parseInt(repetitionsElement.value);
+  if (
+    !timecode ||
+    timecode <= 0 ||
+    !weight ||
+    weight <= 0 ||
+    !repetitions ||
+    repetitions <= 0
+  ) {
+    console.log("weight or repetitions <= 0");
+    return;
+  }
+
+  var workoutType = getActiveWorkout();
+
+  addSetToData(workoutType, timecode, repetitions, weight);
+}
+
+function addSetToData(workoutType, timecode, repetitions, weight) {
+  console.log("addSetToData() called");
+  console.log(workoutType, timecode, repetitions, weight);
 
   var trainingData = getTrainingData();
-
   if (!trainingDataContainsType(trainingData, workoutType)) {
     console.log("trainingData for 'workoutType' not found");
     return;
@@ -331,12 +381,114 @@ function displayDataForWorkoutType() {
   trainingData.sets.forEach((element) => {
     var date = new Date(element.timecode);
     var newRow = tableRef.insertRow();
+    newRow.id = element.timecode;
+    newRow.onclick = function () {
+      setActiveModifySet(element);
+      showModifySetModal(element);
+    };
     newRow.innerHTML = `<tr>
       <td>${date.toISOString().substring(0, 10)}</td>
       <td>${element.weight}</td>
       <td>${element.repetitions}</td>
       </tr>`;
   });
+}
+
+function removeSet() {
+  console.log("removeSet() called");
+  var set = getActiveModifySet();
+  if (!set) {
+    console.log("set not set");
+    return;
+  }
+  var workoutType = getActiveWorkout();
+  var trainingData = getTrainingData();
+  var workout = trainingData.find((element) => element.type === workoutType);
+  workout.sets = workout.sets.filter(
+    (element) => element.timecode !== set.timecode
+  );
+  setTrainingData(trainingData);
+  displayDataForWorkoutType();
+}
+
+function modifySet() {
+  console.log("modifySet() called");
+  var set = getActiveModifySet();
+  if (!set) {
+    console.log("set not set");
+    return;
+  }
+  var modifySetDateElement = document.getElementById("modifySetDate");
+  var modifySetWeightElement = document.getElementById("modifySetWeight");
+  var modifySetRepetitionElement = document.getElementById(
+    "modifySetRepetition"
+  );
+  if (
+    !modifySetDateElement ||
+    !modifySetWeightElement ||
+    !modifySetRepetitionElement
+  ) {
+    console.log("One or more elements could not be found");
+    return;
+  }
+  var timecode = new Date(modifySetDateElement.value).getTime();
+  var weight = parseFloat(modifySetWeightElement.value);
+  var repetitions = parseInt(modifySetRepetitionElement.value);
+  if (
+    !timecode ||
+    timecode <= 0 ||
+    !weight ||
+    weight <= 0 ||
+    !repetitions ||
+    repetitions <= 0
+  ) {
+    console.log("weight or repetitions <= 0");
+    return;
+  }
+  var workoutType = getActiveWorkout();
+  var trainingData = getTrainingData();
+  var workout = trainingData.find((element) => element.type === workoutType);
+  workout.sets = workout.sets.filter(
+    (element) => element.timecode !== set.timecode
+  );
+  workout.sets.push({
+    timecode: delayTimecodeUntilUnique(workout, timecode),
+    repetitions: repetitions,
+    weight: weight,
+  });
+  setTrainingData(trainingData);
+  displayDataForWorkoutType();
+}
+
+function showModifySetModal(set) {
+  console.log("modifySet() called");
+  console.log(set);
+
+  // set modify set modal values
+  var modifySetDateElement = document.getElementById("modifySetDate");
+  var modifySetWeightElement = document.getElementById("modifySetWeight");
+  var modifySetRepetitionElement = document.getElementById(
+    "modifySetRepetition"
+  );
+
+  if (
+    !modifySetDateElement ||
+    !modifySetWeightElement ||
+    !modifySetRepetitionElement
+  ) {
+    console.log("One or more elements could not be found");
+    return;
+  }
+
+  modifySetDateElement.valueAsDate = new Date(set.timecode);
+  modifySetWeightElement.value = set.weight;
+  modifySetRepetitionElement.value = set.repetitions;
+
+  // display modify set modal
+  let modifySetModal = new bootstrap.Modal(
+    document.getElementById("modifySetModal")
+  );
+  modifySetModal.show();
 }
 
 function downloadData() {
